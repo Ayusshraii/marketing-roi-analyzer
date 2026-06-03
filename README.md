@@ -1,166 +1,109 @@
-# 📈 Marketing Campaign ROI Analyzer with AI Copy Diagnosis
+# Marketing Campaign ROI Analyzer
 
-> A data analytics project that combines SQL-based campaign performance analysis, Python modeling, Power BI dashboards, and Claude AI to diagnose **why** certain ad creatives outperform others — going beyond metrics to actionable insights.
+I built this project because I kept wondering — why do marketing dashboards only tell you *what* happened but never *why*? A campaign flops, ROAS drops, and the team just guesses what went wrong with the ad copy.
 
----
+So I tried to solve that. This project analyzes ad campaign performance using SQL and Python, runs A/B significance tests, and then uses the Gemini AI API to actually read the top and bottom performing ad copies and explain what's driving the difference — in plain English.
 
-## 🧩 Business Problem
-
-Marketing teams track CTR, ROAS, and engagement metrics but can't explain **why** a specific ad creative performed better. This leads to repeated trial-and-error ad spend with no learning loop.
-
-**This project solves that** by:
-1. Analyzing campaign performance data using SQL + Python
-2. Running A/B test significance checks
-3. Using the **GEMINI API** to read top vs. bottom performing ad copies and generate a plain-English diagnosis of what drove performance
+It's not perfect, but it taught me a lot about combining traditional analytics with AI in a way that's actually useful for non-technical teams.
 
 ---
 
-## 🗂️ Project Structure
+## What it does
+
+- Pulls campaign performance data and calculates CTR, ROAS, CPC, and conversion rate
+- Compares creative variants using chi-squared A/B testing to check if differences are statistically significant
+- Sends top vs bottom performing ad copies to Gemini API and gets a diagnosis of what copy patterns are working
+- Generates a formatted Excel report with all the KPIs across 3 sheets
+- Power BI dashboard for visual exploration of campaign and creative performance
+
+---
+
+## Tech used
+
+- Python (Pandas, SciPy, OpenPyXL)
+- MySQL
+- Power BI + DAX
+- Gemini AI API
+- Excel
+
+---
+
+## Project structure
 
 ```
 marketing-roi-analyzer/
-│
 ├── data/
-│   ├── raw/                    # Raw campaign CSVs (input)
-│   └── processed/              # Cleaned & enriched data
-│
+│   ├── raw/                  
+│   └── processed/            
 ├── sql/
-│   ├── 01_create_tables.sql    # Schema setup (MySQL)
-│   ├── 02_campaign_metrics.sql # Core KPI queries
-│   └── 03_ab_test_analysis.sql # A/B segment comparison
-│
-├── notebooks/
-│   └── eda_campaign_analysis.ipynb   # Exploratory Data Analysis
-│
+│   ├── 01_create_tables.sql  
+│   ├── 02_campaign_metrics.sql
+│   └── 03_ab_test_analysis.sql
 ├── src/
-│   ├── data_prep.py            # Data cleaning & feature engineering
-│   ├── ab_test.py              # Statistical significance testing
-│   ├── ai_diagnosis.py         # Claude API integration for copy diagnosis
-│   └── report_generator.py    # Auto-generate Excel summary report
-│
+│   ├── data_prep.py          
+│   ├── ab_test.py            
+│   ├── ai_diagnosis.py       
+│   └── report_generator.py  
 ├── powerbi/
-│   └── campaign_dashboard.pbix # Power BI dashboard file
-│
+│   └── campaign_dashboard.pbix
 ├── outputs/
-│   └── sample_ai_report.md    # Sample AI-generated diagnosis output
-│
-├── docs/
-│   └── architecture.md        # Project architecture & flow diagram
-│
 ├── requirements.txt
-├── .env.example
-└── README.md
+└── .env.example
 ```
 
 ---
 
-## 🔧 Tech Stack
+## How to run it
 
-| Layer | Tool |
-|-------|------|
-| Data Storage | MySQL |
-| Data Processing | Python (Pandas, SciPy) |
-| Analysis Notebook | Jupyter Notebook |
-| Visualization | Power BI |
-| Reporting | OpenPyXL (Excel) |
-| AI Diagnosis | Claude API (Anthropic) |
-
----
-
-## 🚀 Setup & Installation
-
-### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/marketing-roi-analyzer.git
+git clone https://github.com/Ayusshraii/marketing-roi-analyzer.git
 cd marketing-roi-analyzer
-```
 
-### 2. Install Python Dependencies
-```bash
-pip install -r requirements.txt
-```
+python -m venv venv
+venv\Scripts\activate
 
-### 3. Configure Environment Variables
-```bash
+pip install -r requirements.txt --prefer-binary
+
 cp .env.example .env
-# Edit .env and add your API key and DB credentials
-```
+# add your Gemini API key inside .env
 
-### 4. Set Up MySQL Database
-```bash
-mysql -u root -p < sql/01_create_tables.sql
-```
-
-### 5. Load Sample Data & Run Analysis
-```bash
-python src/data_prep.py
+python src/data_prep.py --generate-sample
 python src/ab_test.py
 python src/ai_diagnosis.py
+python src/report_generator.py
 ```
 
----
-
-## 🤖 AI Diagnosis — How It Works
-
-The `ai_diagnosis.py` script:
-1. Pulls top 5 and bottom 5 performing ad copies from the processed dataset
-2. Builds a structured prompt with performance metadata (CTR, ROAS, conversions)
-3. Sends it to the **Claude API**
-4. Returns a diagnosis like:
-
-> *"Top-performing ads consistently used urgency-triggering language ('Last 48 hours', 'Only 3 left') combined with a benefit-first headline. Bottom performers led with brand name and lacked a clear CTA. Recommendation: Restructure copy to lead with customer benefit + scarcity signal."*
+You'll need a free Gemini API key from [aistudio.google.com](https://aistudio.google.com). No credit card needed.
 
 ---
 
-## 📊 Key Metrics Analyzed
+## Sample AI output
 
-- **CTR** — Click-Through Rate per campaign/creative
-- **ROAS** — Return on Ad Spend
-- **CPC** — Cost Per Click
-- **Conversion Rate** — Clicks → Purchases
-- **A/B Test p-value** — Statistical significance of creative variants
+This is what the Gemini diagnosis looks like for a campaign where Variant D massively outperformed Variant B:
 
----
+> *Top-performing ads consistently used urgency-triggering language combined with a benefit-first headline. Bottom performers led with the brand name and lacked a clear CTA. The "Learn More" CTA introduced a decision pause where there should have been a decision close. Recommendation: restructure copy to lead with customer benefit + scarcity signal.*
 
-## 📁 Sample Data
-
-The `data/raw/` folder includes `sample_campaigns.csv` with 500 synthetic campaign records across:
-- 3 platforms (Meta, Google, Instagram)
-- 4 product categories
-- 10 ad creative variants
-- 30-day campaign window
-
-Generate your own using: `python src/data_prep.py --generate-sample`
+That kind of insight would normally take a marketing analyst hours to write up manually.
 
 ---
 
-## 📌 Results & Insights (Sample Output)
+## What I learned
 
-| Creative Variant | CTR | ROAS | AI Diagnosis |
-|-----------------|-----|------|--------------|
-| Variant A | 4.2% | 3.8x | Urgency + benefit-led copy |
-| Variant B | 1.1% | 1.2x | Brand-first, weak CTA |
-| Variant C | 3.7% | 3.1x | Social proof anchor |
-
----
-
-## 💡 Learnings & Business Impact
-
-- Identified that **urgency + benefit-led copy** outperforms brand-led copy by ~3x ROAS
-- Reduced manual creative review time from **4 hours → 15 minutes** per campaign cycle
-- AI diagnosis consistent with human marketing team's qualitative judgment in 80% of cases
+- How to structure a real analytics pipeline end to end, not just individual scripts
+- Chi-squared testing for conversion rate comparison (turns out t-test is wrong for this)
+- Prompt engineering — getting the AI to return structured sections I can actually parse
+- How much time goes into data cleaning vs the actual analysis (way more than I expected)
 
 ---
 
-## 👤 Author
+## Dataset
 
-**Ayush Rai**  
-B.E. Computer Science | Chandigarh University  
-[LinkedIn](https://linkedin.com/in/ayusshraii) · [GitHub](https://github.com/YOUR_USERNAME)
+The project generates synthetic campaign data by default — 5 campaigns, 5 creative variants each, 30 days of daily metrics. You can swap in real data from Meta Ads Manager or Google Ads exports by matching the column format in `data/raw/`.
 
 ---
 
-## 📄 License
+## About
 
-MIT License — free to use, modify, and build upon.
-"# marketing-roi-analyzer" 
+Final year B.E. CSE student at Chandigarh University. Building projects to break into data analytics. This is my second project combining traditional DA skills with Gen AI.
+
+Connect on [LinkedIn](https://linkedin.com/in/ayusshraii)
