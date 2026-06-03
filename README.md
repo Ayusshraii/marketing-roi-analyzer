@@ -11,7 +11,7 @@ Marketing teams track CTR, ROAS, and engagement metrics but can't explain **why*
 **This project solves that** by:
 1. Analyzing campaign performance data using SQL + Python
 2. Running A/B test significance checks
-3. Using the **Claude API** to read top vs. bottom performing ad copies and generate a plain-English diagnosis of what drove performance
+3. Using the **GEMINI API** to read top vs. bottom performing ad copies and generate a plain-English diagnosis of what drove performance
 
 ---
 
